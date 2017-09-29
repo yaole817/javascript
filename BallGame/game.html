@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>game</title>
+	<canvas id="screen" width="300" height="500"
+		style="border:1px solid #FF0000;">
+	</canvas>
+	
+</head>
+<body>
+	<script src="Ball.js"></script>
+	<script src="Paddle.js"></script>
+	<script>
+		var log = console.log.bind(console)
+		var c = document.getElementById("screen")
+		var ctx = c.getContext("2d")
+		function path2Image(path){
+			var img = new Image()
+			img.src = path
+			return img 
+		}
+		function loadImg(path,x,y){
+			var img = new Image()
+			img.src = path
+			img.onload = function(){
+				ctx.drawImage(img,x,y)
+			}
+		}
+		function abs(num){
+			if(num < 0){
+				num = -num
+			}
+			return num
+		}
+		function collision(ball, paddle){
+			b = ball
+			p = paddle
+			var bCenterX = b.x + b.image.width/2
+			var bCenterY = b.y + b.image.height/2
+			var pCenterX = p.x + p.image.width/2
+			var pCenterY = p.y + p.image.height/2
+			if((abs(bCenterX - pCenterX) <= (b.image.width + p.image.width)/2)&&
+			   (abs(bCenterY - pCenterY) <= (b.image.height + p.image.height)/2)){
+				if (((p.y + p.image.height > b.y) && (p.y < b.y))||(p.y + p.image.height > b.y + b.image.height) && (p.y < b.y + b.image.height)){
+					return 1
+				}else{
+					return 2
+				}
+			}
+			return 0
+		}
+		var Game = function(){
+			var fsp = 30
+			var b = new Ball()
+			var paddle = new Paddle()
+			window.addEventListener('keydown', function(enent){
+				if(enent.key == 'a'){
+					paddle.moveLeft()
+				}
+				if(enent.key == 'd'){
+					paddle.moveRight()
+				}
+			})
+			setInterval(function(){
+				b.update()
+				ctx.clearRect(0,0,c.width,c.height)
+				b.move()
+				if(collision(b,paddle) == 1){
+					b.speedX = -b.speedX
+				}else if(collision(b,paddle) == 2){
+					b.speedY = -b.speedY
+				}
+				paddle.update()
+
+			},1000/fsp)
+		}
+		function __main(){
+			
+			Game()
+
+		}
+	__main()
+	</script>
+</body>
+</html>
